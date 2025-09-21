@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { paths } from '../lib/api-types';
+import { apiClient } from '../lib/api-client';
 
 // Typy wygenerowane z OpenAPI spec
 type HelloResponse = paths['/api/hello']['get']['responses']['200']['content']['application/json'];
@@ -18,14 +19,15 @@ export default function HelloApi({ className = '' }: HelloApiProps) {
     setError(null);
     
     try {
-      const response = await fetch('/api/hello');
+      const response = await apiClient.get<HelloResponse>('/api/hello');
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (response.error) {
+        throw new Error(response.error);
       }
       
-      const data: HelloResponse = await response.json();
-      setMessage(data.message);
+      if (response.data) {
+        setMessage(response.data.message);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Wystąpił nieoczekiwany błąd');
       console.error('Błąd podczas pobierania wiadomości:', err);
@@ -77,8 +79,9 @@ export default function HelloApi({ className = '' }: HelloApiProps) {
       </div>
       
       <div className="mt-4 text-sm text-gray-600">
-        <p>Ten komponent demonstruje integrację z przyszłym backendem.</p>
+        <p>Ten komponent demonstruje integrację z backendem przez api-client.</p>
         <p>Endpoint: <code className="bg-gray-100 px-1 rounded">GET /api/hello</code></p>
+        <p>Backend URL: <code className="bg-gray-100 px-1 rounded">{import.meta.env.BACKEND_URL || 'BACKEND_URL nie jest ustawiony'}</code></p>
         <p>Typy TypeScript są generowane z <code className="bg-gray-100 px-1 rounded">/contracts/openapi.yaml</code></p>
       </div>
     </div>

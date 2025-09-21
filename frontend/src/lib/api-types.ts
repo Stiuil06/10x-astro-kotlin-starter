@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/hello": {
+    "/api/v2/hello": {
         parameters: {
             query?: never;
             header?: never;
@@ -29,6 +29,10 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         HelloResponse: {
+            /** @description The hello message */
+            message: string;
+        };
+        HelloResponseV2: {
             /** @description The hello message */
             message: string;
         };
