@@ -1,0 +1,51 @@
+openapi: 3.0.3
+info:
+  title: 10x Project API
+  description: API specification for the 10x Project monorepo
+  version: 1.0.0
+  contact:
+    name: 10x Project Team
+servers:
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://api.10xproject.com
+    description: Production server
+paths:
+  /api/hello:
+    get:
+      summary: Hello endpoint
+      description: Returns a simple hello message
+      operationId: getHello
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Hello from the backend!"
+                required:
+                  - message
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+components:
+  schemas:
+    HelloResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: The hello message
+      required:
+        - message

@@ -9,7 +9,8 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "generate:api": "openapi-typescript ../contracts/openapi.yaml --output src/lib/api-types.ts"
   },
   "dependencies": {
     "@astrojs/react": "^4.3.1",
@@ -45,6 +46,7 @@
     "eslint-plugin-react-hooks": "5.2.0",
     "husky": "9.1.7",
     "lint-staged": "15.5.0",
+    "openapi-typescript": "^7.4.2",
     "prettier-plugin-astro": "0.14.1",
     "typescript-eslint": "8.28.0"
   },

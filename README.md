@@ -1,138 +1,144 @@
-# 10x Astro Starter
+# 10x Project - Monorepo
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly static web applications with universal backend API support.
+To jest monorepo zawierające frontend (Astro + React + TypeScript) i przyszły backend (Kotlin + Spring Boot).
 
-## Tech Stack
+## Struktura repozytorium
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
-- Universal API Client - Connect to any backend API
-
-## Prerequisites
-
-- Node.js v18.20.8+ (required for Astro 5)
-- npm (comes with Node.js)
-
-**Note**: This project requires Node.js 18.20.8 or higher. If you're using an older version, please upgrade using [nvm](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n).
-
-## Getting Started
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
+```
+/
+├── frontend/          # Frontend aplikacji (Astro + React + TypeScript)
+├── backend/           # Backend aplikacji (Kotlin + Spring Boot) - puste na razie
+├── contracts/         # Specyfikacje API (OpenAPI)
+├── docker-compose.yml # Konfiguracja Docker dla całego środowiska
+└── README.md         # Ten plik
 ```
 
-2. Install dependencies:
+## Frontend
 
+### Technologie
+- **Astro 5** - Framework meta-framework
+- **React 19** - Biblioteka UI
+- **TypeScript 5** - Typowanie statyczne
+- **Tailwind CSS 4** - Framework CSS
+- **Shadcn/ui** - Komponenty UI
+
+### Uruchamianie frontend
+
+#### Lokalnie
 ```bash
+cd frontend
 npm install
-```
-
-3. Configure your backend API:
-
-```bash
-# Copy the example environment file
-cp src/env.example .env
-
-# Edit .env and set your backend URL
-BACKEND_URL=http://localhost:3001/api
-```
-
-4. Run the development server:
-
-```bash
 npm run dev
 ```
 
-5. Build for production (generates static files):
+Aplikacja będzie dostępna pod adresem `http://localhost:4321`
+
+#### Z Docker
+```bash
+# Uruchom tylko frontend
+docker-compose up frontend
+
+# Lub uruchom wszystko (gdy backend będzie gotowy)
+docker-compose up
+```
+
+### Generowanie typów API
+
+Typy TypeScript są automatycznie generowane z specyfikacji OpenAPI:
 
 ```bash
-npm run build
+cd frontend
+npm run generate:api
 ```
 
-## Available Scripts
+To polecenie:
+1. Czyta specyfikację z `../contracts/openapi.yaml`
+2. Generuje typy TypeScript w `src/lib/api-types.ts`
+3. Umożliwia type-safe wywołania API
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
+### Struktura frontend
 
-## Project Structure
-
-```md
-.
+```
+frontend/
 ├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   ├── components/ # UI components (Astro & React)
-│   ├── lib/        # Services and utilities
-│   │   ├── api-client.ts    # Universal API client
-│   │   ├── services/        # API service layer
-│   │   └── utils/           # Utility functions
-│   ├── types.ts    # Shared TypeScript types
-│   └── styles/     # Global styles
-├── public/         # Public assets
-└── dist/           # Generated static files (after build)
+│   ├── components/     # Komponenty React i Astro
+│   │   ├── ui/        # Komponenty Shadcn/ui
+│   │   ├── HelloApi.tsx # Przykład integracji z API
+│   │   └── ...
+│   ├── layouts/       # Layouty Astro
+│   ├── pages/         # Strony Astro
+│   ├── lib/           # Serwisy i helpery
+│   │   └── api-types.ts # Wygenerowane typy API
+│   └── styles/        # Style CSS
+├── public/            # Zasoby publiczne
+└── package.json       # Zależności i skrypty
 ```
 
-## Backend API Integration
+## Backend
 
-This template includes a universal API client that can connect to any backend API:
+Folder `/backend` jest obecnie pusty. W przyszłości będzie zawierał:
+- Aplikację Kotlin + Spring Boot
+- Implementację endpointów z `/contracts/openapi.yaml`
+- Konfigurację bazy danych
+- Testy jednostkowe i integracyjne
 
-- **API Client**: `src/lib/api-client.ts` - Universal HTTP client
-- **Service Layer**: `src/lib/services/api.service.ts` - Typed API methods
-- **Error Handling**: `src/lib/utils/error-handler.ts` - Consistent error handling
-- **Types**: `src/types.ts` - Shared TypeScript interfaces
+## Kontrakty API
 
-### Configuration
+Folder `/contracts` zawiera specyfikacje API w formacie OpenAPI 3.0:
 
-Set your backend URL in the `.env` file:
+- `openapi.yaml` - Główna specyfikacja API
+- Definiuje wszystkie endpointy, schematy danych i odpowiedzi
+- Jest źródłem prawdy dla typów TypeScript w frontend
+- Backend musi implementować wszystkie zdefiniowane endpointy
 
-```env
-BACKEND_URL=https://your-backend-api.com/api
-```
+### Przykład użycia
 
-### Usage Example
+1. Zdefiniuj endpoint w `/contracts/openapi.yaml`
+2. Wygeneruj typy: `cd frontend && npm run generate:api`
+3. Użyj typów w komponentach React:
 
 ```typescript
-import { apiService } from '../lib/services/api.service';
+import type { paths } from '../lib/api-types';
 
-// In a React component
-const { data, error } = await apiService.getUsers();
+type HelloResponse = paths['/api/hello']['get']['responses']['200']['content']['application/json'];
+
+const response = await fetch('/api/hello');
+const data: HelloResponse = await response.json();
 ```
 
-## AI Development Support
+## Rozwój
 
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
+### Workflow
+1. Zdefiniuj API w `/contracts/openapi.yaml`
+2. Wygeneruj typy frontend: `npm run generate:api`
+3. Zaimplementuj endpoint w backend
+4. Zintegruj z frontend używając wygenerowanych typów
 
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
+### Docker
 
-### Cursor IDE
+```bash
+# Uruchom tylko frontend
+docker-compose up frontend
 
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
+# Uruchom wszystko (gdy backend będzie gotowy)
+docker-compose up
 
-### GitHub Copilot
+# Uruchom w tle
+docker-compose up -d
+```
 
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
+## Konfiguracja Cursor
 
-### Windsurf
+Repozytorium zawiera plik `.cursor/rules` z regułami dla Cursor AI:
+- Traktuj `/frontend` jako projekt Astro + React + TypeScript
+- Nie modyfikuj `/backend` (pusty na razie)
+- Używaj `/contracts` jako źródła prawdy dla API
+- Zawsze generuj typy z OpenAPI spec przed modyfikacją wywołań API
 
-The `.windsurfrules` file contains AI configuration for Windsurf.
+## Wkrótce
 
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
-
-## License
-
-MIT
+- [ ] Implementacja backend w Kotlin + Spring Boot
+- [ ] Konfiguracja bazy danych
+- [ ] Testy end-to-end
+- [ ] CI/CD pipeline
+- [ ] Monitoring i logowanie

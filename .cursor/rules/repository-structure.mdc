@@ -1,0 +1,67 @@
+---
+alwaysApply: true
+---
+# Cursor Rules for 10x Project Monorepo
+
+## Project Structure
+
+This is a monorepo with the following structure:
+- `/frontend` - Astro + React + TypeScript application
+- `/backend` - Kotlin + Spring Boot application (currently empty)
+- `/contracts` - OpenAPI specifications (single source of truth for API)
+
+## Frontend Rules
+
+### Always treat `/frontend` as the Astro + React + TypeScript + Tailwind CSS project root
+- All frontend code is in `/frontend/src/`
+- Use Astro 5, React 19, TypeScript 5, Tailwind CSS 4
+- Follow the existing project structure in `/frontend/src/`
+
+### API Integration
+- **ALWAYS** base API types on `src/lib/api-types.ts` generated from `/contracts/openapi.yaml`
+- Before modifying frontend API calls, ensure types are up-to-date by running `npm run generate:api`
+- Use the generated types for type-safe API calls
+- Example: `import type { paths } from '../lib/api-types'`
+
+### Code Organization
+- Components go in `/frontend/src/components/`
+- UI components from Shadcn/ui go in `/frontend/src/components/ui/`
+- Services and utilities go in `/frontend/src/lib/`
+- Pages go in `/frontend/src/pages/`
+- Layouts go in `/frontend/src/layouts/`
+
+## Backend Rules
+
+### Keep `/backend` separate - don't touch for now
+- The `/backend` folder is currently empty
+- It will contain Kotlin + Spring Boot code in the future
+- Do not modify or create files in `/backend` unless explicitly requested
+
+## Contracts Rules
+
+### Treat `/contracts` as the single source of truth for API definitions
+- All API specifications go in `/contracts/openapi.yaml`
+- This file defines the contract between frontend and backend
+- When adding new endpoints, update the OpenAPI spec first
+- Then regenerate frontend types with `npm run generate:api`
+
+## Development Workflow
+
+1. **API Changes**: Update `/contracts/openapi.yaml` first
+2. **Generate Types**: Run `cd frontend && npm run generate:api`
+3. **Frontend Implementation**: Use generated types in React components
+4. **Backend Implementation**: Implement endpoints according to OpenAPI spec
+
+## File Modifications
+
+- When working on frontend, always work within `/frontend/` directory
+- When modifying API calls, ensure types are generated from contracts
+- Follow existing code patterns and project structure
+- Use TypeScript strictly - no `any` types unless absolutely necessary
+
+## Commands
+
+- Frontend dev: `cd frontend && npm run dev`
+- Generate API types: `cd frontend && npm run generate:api`
+- Docker frontend: `docker-compose up frontend`
+- Lint frontend: `cd frontend && npm run lint`

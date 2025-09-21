@@ -2,6 +2,7 @@
 import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
 import UserList from "../components/UserList.tsx";
+import HelloApi from "../components/HelloApi.tsx";
 ---
 
 <Layout>
@@ -9,5 +10,9 @@ import UserList from "../components/UserList.tsx";
   
   <div class="mt-8">
     <UserList client:load />
+  </div>
+  
+  <div class="mt-8">
+    <HelloApi client:load />
   </div>
 </Layout>
