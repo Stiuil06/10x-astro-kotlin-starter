@@ -1,0 +1,169 @@
+---
+description: Guidelines for running backend applications
+globs:
+alwaysApply: false
+---
+
+# Backend Runtime
+
+This document explains how to build, run, debug, and restart the backend locally. It is written for both humans and AI coding agents.
+
+Important context:
+- The backend lives under backend/ and is a Gradle multi-module project at backend/codebase.
+- Java 21 and Kotlin are used. Spring Boot powers the runtime.
+- API contract is defined in /contracts/openapi.yaml.
+
+
+## Prerequisites
+- Java 21 installed and JAVA_HOME pointing to it (verify with: java -version).
+- Unix-like shell (macOS/Linux) or PowerShell on Windows.
+- Docker (optional) if you plan to run external services via docker-compose.yml.
+- No global Gradle required — use the Gradle wrapper (./gradlew) from backend/codebase.
+
+
+## Where to run commands
+Always change directory to the Gradle root before running build/run commands:
+- cd backend/codebase
+
+
+## Build, test, and run
+- Build everything (with tests):
+  ./gradlew build
+
+- Run unit tests only:
+  ./gradlew test
+
+- Static analysis (Detekt):
+  ./gradlew detekt
+
+- Run the Spring Boot application (deployment module):
+  ./gradlew :modules:deployment:bootRun
+
+- Run with a specific Spring profile:
+  ./gradlew :modules:deployment:bootRun --args='--spring.profiles.active=<profile>'
+
+- Package a bootable jar (deployment module):
+  ./gradlew :modules:deployment:bootJar
+
+Profiles available (resources in modules/deployment/src/main/resources):
+- default — standard configuration (application.yaml)
+- intellij — IntelliJ-friendly defaults (JWT secrets, CORS) (application-intellij.yaml)
+- agent — AI-agent friendly (broader CORS and agent-specific tweaks) (application-agent.yaml)
+
+
+## Verifying the app is running
+When bootRun reports Tomcat started on port(s): 8080, the app should be up.
+- Status endpoint (custom): http://localhost:8080/_status
+
+Expected healthy response example:
+- _status: JSON with status and commit info
+
+If the port is different in your profile, adjust URLs accordingly.
+
+
+## OpenAPI model generation
+The backend uses OpenAPI Generator for model classes. If /contracts/openapi.yaml changes:
+- cd backend/codebase
+- ./gradlew :modules:apps:myAppName:openapi-specification:openApiGenerate
+Generated models appear under modules/apps/myAppName/openapi-specification/src/main/kotlin/pl/myAppName/model/* with the suffix "View".
+
+
+## Typical local development loop
+1) Start the app:
+   ./gradlew :modules:deployment:bootRun --args='--spring.profiles.active=agent'
+
+2) Make code changes in modules (domain/application/infrastructure/assembly/deployment).
+
+3) Hot reload:
+   - Spring DevTools may not be configured; prefer stopping and re-running quickly.
+
+4) Run fast tests close to the change:
+   - ./gradlew :modules:<your-module>:test
+
+5) Check status endpoints and logs to validate behavior.
+
+
+## Debugging guidance for an AI agent
+Follow this sequence when something goes wrong:
+
+A. Build fails
+- Read the exact Gradle error output at the bottom of the stack trace.
+- Re-run with more logs: ./gradlew build --stacktrace --info
+- Compile one module at a time to localize the failure:
+  ./gradlew :modules:<moduleName>:build
+- If Gradle cache/daemon looks stale:
+  ./gradlew --stop
+  ./gradlew clean build
+
+B. App fails to start
+- Common causes:
+  - Wrong Java version — must be Java 21.
+  - Port 8080 already in use (see “How to kill or free the port” below).
+  - Missing profile-specific configs — try profile intellij or agent.
+  - Bean wiring issues — read logs for missing beans; check assembly/deployment modules.
+
+- Try a different profile:
+  ./gradlew :modules:deployment:bootRun --args='--spring.profiles.active=intellij'
+
+- Enable more verbose logs via application-*.yaml if needed.
+
+C. Endpoint returns unexpected response
+- Verify the OpenAPI contract in /contracts/openapi.yaml.
+- Confirm controllers/routers are wired in deployment and adapters in assembly.
+- Use status endpoints to check health; inspect logs.
+- Add temporary logging around the suspected handler or service.
+
+D. Problems with generated models
+- Regenerate: ./gradlew :modules:apps:myAppName:openapi-specification:openApiGenerate
+- Rebuild the project after generation.
+
+E. Dependency services
+- If docker-compose.yml is used, ensure dependencies are running:
+  docker compose up -d
+- Inspect logs: docker compose logs -f
+
+
+## How to stop, kill, and restart the app
+Preferred ways, in order:
+
+1) Graceful stop of bootRun
+- In the terminal running bootRun, press Ctrl+C.
+
+2) Stop Gradle daemons
+- If the process lingers or ports remain bound:
+  ./gradlew --stop
+
+3) Free the occupied port (default 8080)
+- Find the PID listening on port 8080 and kill it.
+  macOS/Linux:
+    lsof -i :8080
+    kill -15 <PID>
+    # If it refuses to stop after a few seconds:
+    kill -9 <PID>
+  Windows (PowerShell):
+    netstat -ano | Select-String 8080
+    taskkill /PID <PID> /F
+
+4) Restart the app
+- cd backend/codebase
+- Choose a profile and run:
+  ./gradlew :modules:deployment:bootRun --args='--spring.profiles.active=intellij'
+
+5) Docker services (if used)
+- Stop: docker compose down
+- Start: docker compose up -d
+
+
+## Quick checklist (for agents)
+- Am I in backend/codebase? If not, cd there.
+- Do I have Java 21? java -version
+- Does ./gradlew build succeed? If not, read the last error and fix locally in the failing module.
+- Is port 8080 free? If not, free it and retry.
+- Did I select the right profile (agent) for local dev?
+- Are the status endpoints healthy after startup?
+
+
+## References
+- Detailed backend README: backend/README.md
+- OpenAPI contract: /contracts/openapi.yaml
+- Helpful links: backend/HELP.md

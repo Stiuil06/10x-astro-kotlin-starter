@@ -1,0 +1,214 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Universal Backend API Integration
+
+This document provides a reproducible guide to create the necessary file structure for integrating with any backend API in your Astro project.
+
+## API Integration
+- ALWAYS base API types on `src/lib/api-types.ts` generated from `/contracts/openapi.yaml`
+- Before modifying frontend API calls, ensure types are up-to-date by running `npm run generate:api`
+- Use the generated types for type-safe API calls
+- Example: `import type { paths } from '../lib/api-types'`
+
+## Prerequisites
+
+- Your project should use Astro 5, TypeScript 5, React 19, and Tailwind 4.
+- Ensure that a `.env` file exists with `BACKEND_URL` variable defined.
+- The project is configured for static site generation (SSG).
+
+## File Structure and Setup
+
+### 1. API Client Initialization
+
+Create the file `/src/lib/api-client.ts` with the following content:
+
+```ts
+const BACKEND_URL = import.meta.env.BACKEND_URL;
+
+export interface ApiResponse<T = any> {
+  data?: T;
+  error?: string;
+  message?: string;
+}
+
+export class ApiClient {
+  private baseUrl: string;
+
+  constructor(baseUrl: string = BACKEND_URL) {
+    this.baseUrl = baseUrl.replace(/\/$/, ''); // Remove trailing slash
+  }
+
+  private async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<ApiResponse<T>> {
+    const url = `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    
+    const defaultHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          ...defaultHeaders,
+          ...options.headers,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return { data };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
+
+  async get<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, { ...options, method: 'GET' });
+  }
+
+  async post<T>(endpoint: string, data?: any, options?: RequestInit): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async put<T>(endpoint: string, data?: any, options?: RequestInit): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async delete<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, { ...options, method: 'DELETE' });
+  }
+}
+
+export const apiClient = new ApiClient();
+```
+
+This file provides a universal API client that can communicate with any backend API using the `BACKEND_URL` environment variable.
+
+### 2. TypeScript Environment Definitions
+
+Create the file `src/env.d.ts` with the following content:
+
+```ts
+/// <reference types="astro/client" />
+
+interface ImportMetaEnv {
+  readonly BACKEND_URL: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+```
+
+This file defines the environment variables available in your application.
+
+### 3. API Service Layer
+
+Create the file `/src/lib/services/api.service.ts` with the following content:
+
+```ts
+import { apiClient, type ApiResponse } from '../api-client';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+}
+
+export interface CreateUserData {
+  email: string;
+  name: string;
+}
+
+export class ApiService {
+  // User endpoints
+  async getUsers(): Promise<ApiResponse<User[]>> {
+    return apiClient.get<User[]>('/users');
+  }
+
+  async getUser(id: string): Promise<ApiResponse<User>> {
+    return apiClient.get<User>(`/users/${id}`);
+  }
+
+  async createUser(userData: CreateUserData): Promise<ApiResponse<User>> {
+    return apiClient.post<User>('/users', userData);
+  }
+
+  async updateUser(id: string, userData: Partial<CreateUserData>): Promise<ApiResponse<User>> {
+    return apiClient.put<User>(`/users/${id}`, userData);
+  }
+
+  async deleteUser(id: string): Promise<ApiResponse<void>> {
+    return apiClient.delete<void>(`/users/${id}`);
+  }
+
+  // Add more service methods as needed for your specific backend
+}
+
+export const apiService = new ApiService();
+```
+
+This service layer provides typed methods for interacting with your backend API.
+
+### 4. Error Handling
+
+Create the file `/src/lib/utils/error-handler.ts` with the following content:
+
+```ts
+export interface ApiError {
+  message: string;
+  status?: number;
+  code?: string;
+}
+
+export function handleApiError(error: unknown): ApiError {
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+    };
+  }
+
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    return {
+      message: (error as any).message,
+      status: (error as any).status,
+      code: (error as any).code,
+    };
+  }
+
+  return {
+    message: 'An unknown error occurred',
+  };
+}
+
+export function isApiError(error: unknown): error is ApiError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof (error as any).message === 'string'
+  );
+}
+```
+
+This utility provides consistent error handling across your application.

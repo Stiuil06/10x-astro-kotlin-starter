@@ -1,0 +1,34 @@
+---
+description: 
+globs: *.tsx
+alwaysApply: false
+---
+### Guidelines for React
+
+- Use functional components with hooks instead of class components
+- Never use "use client" and other Next.js directives as we use React with Astro
+- Extract logic into custom hooks in feature-specific `hooks/` folders
+- Implement React.memo() for expensive components that render often with the same props
+- Utilize React.lazy() and Suspense for code-splitting and performance optimization
+- Use the useCallback hook for event handlers passed to child components to prevent unnecessary re-renders
+- Prefer useMemo for expensive calculations to avoid recomputation on every render
+- Implement useId() for generating unique IDs for accessibility attributes
+- Consider using the new useOptimistic hook for optimistic UI updates in forms
+- Use useTransition for non-urgent state updates to keep the UI responsive
+
+### Component Development Patterns
+
+#### Feature-Based Hooks
+- Place hooks in feature-specific folders: `src/components/features/[feature]/hooks/`
+- Create global hooks in `src/lib/hooks/` for cross-feature functionality
+- Use custom hooks to encapsulate complex logic and state management
+
+#### Context Usage
+- Create context providers in feature-specific `context/` folders
+- Use context for shared state within features (e.g., auth context)
+- Avoid prop drilling by using context for deeply nested component trees
+
+#### Component Composition
+- Build complex components by composing smaller, focused components
+- Use compound component patterns for related UI elements
+- Implement render props or children as functions for flexible component APIs

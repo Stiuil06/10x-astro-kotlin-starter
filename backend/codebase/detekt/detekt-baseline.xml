@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues>
+    <ID>EmptyClassBlock:ExtraShiftView.kt$ExtraShiftView</ID>
+    <ID>EmptyClassBlock:ColleagueEligibleShiftsValidationRequestView.kt$ColleagueEligibleShiftsValidationRequestView</ID>
+    <ID>EmptyClassBlock:EligibleExtraShiftView.kt$EligibleExtraShiftView</ID>
+    <ID>EmptyDefaultConstructor:ColleagueEligibleShiftsValidationRequestView.kt$ColleagueEligibleShiftsValidationRequestView</ID>
+    <ID>EmptyClassBlock:ColleagueEligibleShiftsValidationRequestView.kt$ColleagueEligibleShiftsValidationRequestView${ }</ID>
+    <ID>EmptyClassBlock:EligibleExtraShiftView.kt$EligibleExtraShiftView${ }</ID>
+    <ID>EmptyClassBlock:ExtraShiftView.kt$ExtraShiftView${ }</ID>
+    <ID>EmptyDefaultConstructor:ColleagueEligibleShiftsValidationRequestView.kt$ColleagueEligibleShiftsValidationRequestView$( )</ID>
+  </ManuallySuppressedIssues>
+</SmellBaseline>

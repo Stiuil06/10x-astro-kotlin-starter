@@ -1,0 +1,125 @@
+---
+description: Guidelines for running frontend application
+globs:
+alwaysApply: false
+---
+
+# Frontend Runtime
+
+This document is a precise runtime guide for the Frontend (Astro + React) application. It explains how to run, debug, stop, and restart the app both locally and with Docker. Use it as an execution and troubleshooting playbook for humans and AI agents.
+
+## Tech context (read-only)
+- Astro 5 (dev server powered by Vite)
+- React 19, TypeScript 5
+- Tailwind CSS 4, shadcn/ui
+- Dev server always runs on port 3000 (see `frontend/astro.config.mjs` → `server: { port: 3000 }`)
+
+## Prerequisites
+- Node.js and npm installed.
+- Working directory: repository root (commands will cd into `frontend`).
+- No environment variables are required for a basic local run.
+
+## How to run (local development)
+1. Navigate to the frontend project:
+   - `cd frontend`
+2. Install dependencies (first run or after lockfile changes):
+   - `npm install`
+3. Start the dev server (defaults to port 3000):
+   - `npm run dev`
+4. Open the app in a browser:
+   - http://localhost:3000
+
+Expected console output includes a “Local” URL line for port 3000. The process remains attached to the terminal until stopped.
+
+## How to run with Docker
+From the repository root (where `docker-compose.yml` lives):
+- Frontend only:
+  - `docker-compose up frontend`
+- Whole stack:
+  - `docker-compose up`
+
+To rebuild after dependency changes: add `--build` to the `docker-compose up` command.
+
+## API type generation (OpenAPI → TypeScript)
+Run this whenever the spec changes or generated files are missing:
+- `cd frontend`
+- `npm run generate:api`
+
+This reads `../contracts/openapi.yaml` and writes to:
+- `frontend/src/lib/api-types.ts`
+- `frontend/src/lib/generated/` (supporting files)
+
+## Debugging checklist (AI agent friendly)
+Follow these steps in order if the app does not start, crashes, or does not respond:
+
+1) Confirm the process is running
+- Check the terminal where `npm run dev` was started for errors.
+- If using Docker, verify container logs: `docker-compose logs -f frontend`.
+
+2) Verify the expected URL
+- The app must be available at http://localhost:3000 in development.
+- If the terminal shows a different port, ensure `frontend/astro.config.mjs` contains `server: { port: 3000 }`.
+
+3) Resolve port 3000 conflicts
+- If port 3000 is already in use, stop the previous process and start again.
+- On macOS (and Linux), typical approach:
+  - Kill gracefully by port (SIGTERM): `kill $(lsof -ti :3000 -sTCP:LISTEN)`
+  - If it doesn't stop, force kill (SIGKILL): `kill -9 $(lsof -ti :3000 -sTCP:LISTEN)`
+- In Docker, stop the container: `docker-compose stop frontend` (or `docker stop <container>`).
+
+4) Fix dependency and build issues
+- Reinstall dependencies: `rm -rf node_modules && npm install` (local runs).
+- Clear caches if needed (optional): remove `.vite` cache under `node_modules` or restart the dev server.
+- Run linter to surface TS/ES issues: `npm run lint` (and `npm run lint:fix` if needed).
+
+5) Regenerate API types when imports fail
+- Errors mentioning `api-types.ts` or missing generated code → `npm run generate:api` inside `frontend`.
+- Ensure the OpenAPI file exists: `contracts/openapi.yaml` in repo root.
+
+6) Check browser console and network
+- Open DevTools → Console and Network.
+- 404s for `/api/...` endpoints are expected if the backend is not running. Either:
+  - Start the backend, or
+  - Avoid calling those routes during frontend-only development, or
+  - Mock the responses in the UI.
+- If CORS or fetch errors occur when hitting a real backend, verify the backend is reachable and configured for the dev origin.
+
+7) Re-run in Docker when host setup is broken
+- If local Node tooling is corrupted, try: `docker-compose up --build frontend` and test via the same http://localhost:3000.
+
+If the above fails, capture the exact terminal error output and the last 50 lines of logs to guide the next fix.
+
+## How to stop and restart the app
+
+Local (npm):
+- Stop: In the terminal running the dev server, press Ctrl+C (sends SIGINT) to gracefully stop.
+- Force stop by port (if orphaned):
+  - Graceful stop by port (SIGTERM): `kill $(lsof -ti :3000 -sTCP:LISTEN)`
+  - If it doesn't stop, force kill (SIGKILL): `kill -9 $(lsof -ti :3000 -sTCP:LISTEN)`
+- Restart: `npm run dev` in `frontend` again.
+
+Docker:
+- Stop one service: `docker-compose stop frontend`
+- Stop everything: `docker-compose down`
+- Restart frontend only: `docker-compose up frontend`
+- Rebuild and restart (after dependency or config changes): `docker-compose up --build frontend`
+
+## Quick sanity checks after startup
+- Terminal shows Astro/Vite dev server with a Local URL at http://localhost:3000
+- The homepage renders without fatal errors.
+- Navigation works; static pages load.
+- If backend-dependent pages are used, ensure the backend is running or use mocks.
+
+## Useful scripts (from frontend/package.json)
+- `npm run dev` — Start the dev server on port 3000
+- `npm run build` — Build for production
+- `npm run preview` — Preview the built app
+- `npm run lint` — Lint code
+- `npm run lint:fix` — Auto-fix lint issues
+- `npm run format` — Format code
+- `npm run generate:api` — Generate API types from OpenAPI
+
+Notes:
+- The dev server is intentionally fixed to port 3000 in development; prefer freeing the port rather than changing the config, to match docs and team expectations.
+- No environment variables are required for the base setup described here. If new features add env requirements, ensure they are documented in `frontend/README.md`.
+

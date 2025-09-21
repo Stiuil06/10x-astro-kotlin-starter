@@ -1,0 +1,187 @@
+openapi: 3.0.3
+info:
+  title: 10x Project API
+  description: API specification for the 10x Project monorepo with authentication and role-based access
+  version: 1.0.0
+  contact:
+    name: 10x Project Team
+servers:
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://todo
+    description: Production server
+paths:
+  /login:
+    post:
+      summary: User login
+      description: Authenticate user and receive JWT token
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized - invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /user:
+    get:
+      summary: Get user data
+      description: Retrieve data for authenticated user
+      operationId: getUserData
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User data retrieved successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Data for user"
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /moderator:
+    get:
+      summary: Get moderator data
+      description: Retrieve data for authenticated moderator
+      operationId: getModeratorData
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Moderator data retrieved successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Data for moderator"
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /administrator:
+    get:
+      summary: Get administrator data
+      description: Retrieve data for authenticated administrator
+      operationId: getAdministratorData
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Administrator data retrieved successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Data for administrator"
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /_status:
+    get:
+      summary: Health check
+      description: Returns application health status
+      operationId: getStatus
+      responses:
+        '200':
+          description: Application is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetStatus200Response'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Username for authentication
+          example: "user"
+        password:
+          type: string
+          description: Password for authentication
+          example: "user123"
+      required:
+        - username
+        - password
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token for authentication
+          example: "eyJhbGciOiJIUzI1NiJ9..."
+        type:
+          type: string
+          description: Token type
+          example: "Bearer"
+      required:
+        - token
+        - type
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Access Denied"
+      required:
+        - error
+    GetStatus200Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: HTTP status code
+          example: 200
+        status:
+          type: string
+          description: Status message
+          example: "OK"
+        commit:
+          type: string
+          description: Git commit hash
+          example: "abc123def456"
+      required:
+        - code
+        - status
+        - commit

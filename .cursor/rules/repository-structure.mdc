@@ -1,0 +1,75 @@
+---
+description: Project Structure
+globs:
+alwaysApply: true
+---
+
+## Project Structure
+
+This is a monorepo with the following structure:
+- `/frontend` - Astro + React + TypeScript + Tailwind CSS application
+- `/backend` - Kotlin + Spring Boot application
+- `/contracts` - OpenAPI specifications (single source of truth for API for both frontend and backend)
+
+## Frontend Rules
+
+### Always treat `/frontend` as the Astro + React + TypeScript + Tailwind CSS project root
+- All frontend code is in `/frontend/src/`
+- Use Astro 5, React 19, TypeScript 5, Tailwind CSS 4
+- Follow the existing project structure in `/frontend/src/`
+
+
+### Code Organization
+- Components go in `/frontend/src/components/`
+- UI components from Shadcn/ui go in `/frontend/src/components/ui/`
+- Services and utilities go in `/frontend/src/lib/`
+- Pages go in `/frontend/src/pages/`
+- Layouts go in `/frontend/src/layouts/`
+
+## Backend Rules
+
+### Backend is active and follows the documented modular Hexagonal architecture
+- The `/backend` folder contains a Kotlin 1.9.22 + Spring Boot 3.5.6 multi-module Gradle project under `backend/codebase/`
+- Treat `contracts/openapi.yaml` as the single source of truth for HTTP APIs; keep backend consistent with it
+- Follow the modular layout described in `backend/README.md`
+- Domain must not depend on Spring or infrastructure; communicate via ports and DTOs
+- Prefer constructor-based DI, immutable data classes, Bean Validation, and centralized exception handling
+- Default commands (run from `backend/codebase`):
+  - Build: `./gradlew build`
+  - Test: `./gradlew test`
+  - Static analysis: `./gradlew detekt`
+  - Run app: `./gradlew :modules:deployment:bootRun`
+  - Run with profile: `./gradlew :modules:deployment:bootRun --args='--spring.profiles.active=<profile>'`
+- Keep security via `apps/login`; protect endpoints by default and avoid logging secrets
+- Provide status endpoint via deployment module (`/_status`)
+- Available profiles: `default`, `intellij`, `agent` (profile dedicated to use by AI agents)
+
+## Contracts Rules
+
+### Treat `/contracts` as the single source of truth for API definitions
+- All API specifications go in `/contracts/openapi.yaml`
+- This file defines the contract between frontend and backend
+- When adding new endpoints, update the OpenAPI spec first
+- Then regenerate frontend types with `npm run generate:api`
+
+## Development Workflow
+
+1. **API Changes**: Update `/contracts/openapi.yaml` first
+2. **Frontend Generate Types**: Run `cd frontend && npm run generate:api`
+3. **backedn Generate Types**: `cd backend/codebase && ./gradlew :modules:apps:myAppName:openapi-specification:openApiGenerate`
+4. **Frontend Implementation**: Use generated types in React components
+5. **Backend Implementation**: Implement endpoints according to OpenAPI spec
+
+## File Modifications
+
+- When working on frontend, always work within `/frontend/` directory
+- When modifying API calls, ensure types are generated from contracts
+- Follow existing code patterns and project structure
+- Use TypeScript strictly - no `any` types unless absolutely necessary
+
+## Commands
+
+- Frontend dev: `cd frontend && npm run dev`
+- Generate API types: `cd frontend && npm run generate:api`
+- Docker frontend: `docker-compose up frontend`
+- Lint frontend: `cd frontend && npm run lint`

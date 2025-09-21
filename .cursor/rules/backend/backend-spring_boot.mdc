@@ -1,0 +1,24 @@
+---
+globs:
+alwaysApply: false
+---
+## BACKEND
+
+### Guidelines for KOTLIN
+
+#### SPRING_BOOT (KOTLIN)
+
+- Use Spring Boot for simplified configuration and rapid development with sensible defaults
+- Prefer constructor-based dependency injection over `@Autowired` (Kotlin favors primary constructor injection)
+- Avoid hardcoding values that may change externally, use configuration parameters (`@Value`, `@ConfigurationProperties`)
+- For complex logic, use configuration parameters to control which beans are injected instead of hardcoded conditionals
+- If a well-known library simplifies the solution, suggest using it instead of generating a custom implementation
+- Use DTOs as immutable `data class` types
+- Use Bean Validation annotations (e.g., `@Size`, `@Email`, etc.) instead of manual validation logic
+- Use `@Valid` on request parameters annotated with `@RequestBody`
+- Use custom exceptions for business-related scenarios
+- Centralize exception handling with `@ControllerAdvice` and return a consistent error DTO: `{{error_dto}}`
+- REST controllers should handle only routing and I/O mapping, not business logic
+- Use kotlin-logging `KotlinLogging.logger {}` for logging instead of `println`
+- Prefer using Kotlin idioms like `map`, `filter`, `forEach`, and functional constructs over imperative loops where appropriate
+- Use nullable types and safe calls (`?.`) instead of `Optional` to avoid `NullPointerException`

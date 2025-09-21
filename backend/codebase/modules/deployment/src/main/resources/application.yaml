@@ -1,0 +1,9 @@
+application:
+  commit-number: default
+  environment: default
+spring:
+  application:
+    name: myAppName
+  autoconfigure:
+    exclude:
+    - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

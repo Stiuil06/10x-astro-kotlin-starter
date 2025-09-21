@@ -1,0 +1,25 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <div id="endpoints-checker"></div>
+</Layout>
+
+<script>
+  import { EndpointsChecker } from "../components/EndpointsChecker";
+  import { AuthProvider } from "../components/auth";
+  import { createRoot } from "react-dom/client";
+  import React from "react";
+
+  // Renderuj komponent EndpointsChecker z AuthProvider
+  const container = document.getElementById("endpoints-checker");
+  if (container) {
+    const root = createRoot(container);
+    root.render(
+      React.createElement(AuthProvider, null,
+        React.createElement(EndpointsChecker)
+      )
+    );
+  }
+</script>

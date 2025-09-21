@@ -1,0 +1,146 @@
+---
+description: Component architecture and organization guidelines
+globs: *.tsx,*.ts
+alwaysApply: false
+---
+# Component Architecture Guidelines
+
+## Project Structure Overview
+
+The frontend follows a modern, scalable component architecture with clear separation of concerns:
+
+```
+src/
+├── components/           # Component library
+│   ├── common/          # Reusable UI components
+│   ├── features/        # Feature-specific components
+│   ├── layout/          # Main layout components
+│   └── index.ts         # All components exports
+├── lib/                 # Utilities and services
+│   ├── api/             # API client and configuration
+│   ├── constants/       # Application constants
+│   ├── utils/           # Utility functions
+│   ├── hooks/           # Global hooks
+│   └── generated/       # Generated API types
+├── types/               # Global type definitions
+└── ...
+```
+
+## Component Organization
+
+### Common Components (`src/components/common/`)
+- **Purpose**: Reusable UI components used across the entire application
+- **Examples**: Button, Card, Input, Modal
+- **Structure**: Each component in its own folder with `index.ts` export
+- **Naming**: PascalCase for component names, kebab-case for folders
+
+### Feature Components (`src/components/features/`)
+- **Purpose**: Business logic components organized by feature
+- **Structure**: Each feature has its own folder with subfolders:
+  - `components/` - Feature-specific components
+  - `hooks/` - Feature-specific hooks
+  - `context/` - Feature-specific context providers
+  - `index.ts` - Feature exports
+- **Examples**: `auth/`, `dashboard/`, `profile/`
+
+### Layout Components (`src/components/layout/`)
+- **Purpose**: Main application layout components
+- **Examples**: AppWrapper, MainLayout, Header, Footer
+- **Structure**: Each component in its own folder with `index.ts` export
+
+## Import Patterns
+
+### ✅ Good - Clean Imports
+```typescript
+// Use index files for clean imports
+import { Button, Card } from '../components/common';
+import { LoginForm, useAuth } from '../components/features/auth';
+import { Navigation } from '../components/features/layout';
+import { AppWrapper } from '../components/layout';
+```
+
+### ❌ Avoid - Direct File Imports
+```typescript
+// Don't import directly from component files
+import { Button } from '../components/common/Button/Button';
+import { LoginForm } from '../components/features/auth/components/LoginForm/LoginForm';
+```
+
+## Component Development Guidelines
+
+### Component Structure
+Each component should follow this structure:
+```
+ComponentName/
+├── ComponentName.tsx    # Main component file
+├── ComponentName.test.tsx # Tests (optional)
+└── index.ts            # Export file
+```
+
+### TypeScript Guidelines
+- Use TypeScript interfaces for all props
+- Define component props interfaces with descriptive names
+- Use generic types for reusable components
+- Export types alongside components
+
+### Component Patterns
+- Use functional components with hooks
+- Implement proper error boundaries for API failures
+- Use React.memo() for expensive components
+- Implement proper loading and error states
+
+### Context Usage
+- Create context providers in feature-specific `context/` folders
+- Use context for shared state within features
+- Avoid prop drilling by using context for deeply nested components
+- Export context hooks for easy consumption
+
+### Custom Hooks
+- Place feature-specific hooks in `src/components/features/[feature]/hooks/`
+- Create global hooks in `src/lib/hooks/`
+- Use custom hooks to encapsulate complex logic
+- Follow the `use` prefix naming convention
+
+## File Naming Conventions
+
+- **Components**: PascalCase (e.g., `Button.tsx`, `LoginForm.tsx`)
+- **Hooks**: camelCase with `use` prefix (e.g., `useAuth.ts`, `useLocalStorage.ts`)
+- **Types**: camelCase (e.g., `auth.ts`, `api.ts`)
+- **Utils**: camelCase (e.g., `jwt.ts`, `validation.ts`)
+- **Folders**: kebab-case (e.g., `login-form/`, `user-profile/`)
+
+## Best Practices
+
+### Component Design
+- Keep components small and focused on a single responsibility
+- Use composition over inheritance
+- Implement proper prop validation with TypeScript
+- Use default props for optional parameters
+
+### State Management
+- Use local state for component-specific data
+- Use context for shared state within features
+- Use global state management (if needed) for cross-feature state
+- Implement proper state cleanup in useEffect
+
+### Performance
+- Use React.memo() for components that render often with same props
+- Implement useCallback for event handlers passed to children
+- Use useMemo for expensive calculations
+- Consider React.lazy() for code splitting large components
+
+### Testing
+- Write unit tests for individual components
+- Test component behavior, not implementation details
+- Use React Testing Library for component tests
+- Mock external dependencies and API calls
+
+## Migration Guidelines
+
+When refactoring existing components:
+1. Move components to appropriate feature folders
+2. Update import statements to use new paths
+3. Create index.ts files for clean exports
+4. Update component props to use TypeScript interfaces
+5. Add proper error handling and loading states
+6. Write tests for refactored components

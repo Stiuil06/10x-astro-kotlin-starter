@@ -1,0 +1,8 @@
+---
+description: Frontend application port (3000)
+globs: 
+alwaysApply: false
+---
+
+The front-end application should always run on port 3000.
+All health checks and validations should also assume that the application is on port 300.

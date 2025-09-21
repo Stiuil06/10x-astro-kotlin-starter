@@ -1,0 +1,7 @@
+---
+description: Code and documentation should be written in English.
+globs:
+alwaysApply: true
+---
+
+Use English for all code and documentation.
