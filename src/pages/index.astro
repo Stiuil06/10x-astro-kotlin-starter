@@ -1,8 +1,13 @@
 ---
 import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
+import UserList from "../components/UserList.tsx";
 ---
 
 <Layout>
   <Welcome />
+  
+  <div class="mt-8">
+    <UserList client:load />
+  </div>
 </Layout>

@@ -5,15 +5,18 @@ alwaysApply: false
 ---
 ### Guidelines for Astro
 
-- Leverage View Transitions API for smooth page transitions (use ClientRouter)
+- Configure for static site generation (SSG) with `output: "static"`
+- Use View Transitions API for smooth page transitions (use ClientRouter)
 - Use content collections with type safety for blog posts, documentation, etc.
-- Leverage Server Endpoints for API routes
-- Use POST, GET  - uppercase format for endpoint handlers
-- Use `export const prerender = false` for API routes
-- Use zod for input validation in API routes
-- Extract logic into services in `src/lib/services`
-- Implement middleware for request/response modification
+- For API communication, use the universal API client from `src/lib/api-client.ts`
+- Extract API logic into services in `src/lib/services`
 - Use image optimization with the Astro Image integration
-- Implement hybrid rendering with server-side rendering where needed
-- Use Astro.cookies for server-side cookie management
-- Leverage import.meta.env for environment variables
+- Implement client-side data fetching in React components for dynamic content
+- Use `client:load` or `client:visible` for interactive components
+- Leverage import.meta.env for environment variables (especially BACKEND_URL)
+- Use Astro.cookies for client-side cookie management
+- Implement proper error boundaries for API failures
+- Use TypeScript interfaces for API response types
+- The project generates static HTML/CSS/JS files that can be deployed to any static hosting
+- All API calls are made client-side from React components
+- No server-side rendering for API data - use client-side hydration
