@@ -10,17 +10,18 @@ export class ApiClient {
   private baseUrl: string;
 
   constructor(baseUrl: string = BACKEND_URL) {
-    this.baseUrl = baseUrl.replace(/\/$/, ''); // Remove trailing slash
+    // Check if baseUrl is defined and is a string
+    if (!baseUrl || typeof baseUrl !== "string") {
+      throw new Error("BACKEND_URL environment variable is not defined. Please set it in your .env file.");
+    }
+    this.baseUrl = baseUrl.replace(/\/$/, ""); // Remove trailing slash
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
-    const url = `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
-    
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+    const url = `${this.baseUrl}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
+
     const defaultHeaders = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     try {
@@ -40,19 +41,19 @@ export class ApiClient {
       return { data };
     } catch (error) {
       return {
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error: error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
 
   async get<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, { ...options, method: 'GET' });
+    return this.request<T>(endpoint, { ...options, method: "GET" });
   }
 
   async post<T>(endpoint: string, data?: any, options?: RequestInit): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       ...options,
-      method: 'POST',
+      method: "POST",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
@@ -60,15 +61,14 @@ export class ApiClient {
   async put<T>(endpoint: string, data?: any, options?: RequestInit): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       ...options,
-      method: 'PUT',
+      method: "PUT",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
   async delete<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, { ...options, method: 'DELETE' });
+    return this.request<T>(endpoint, { ...options, method: "DELETE" });
   }
 }
 
 export const apiClient = new ApiClient();
-
