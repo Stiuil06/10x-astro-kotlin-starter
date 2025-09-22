@@ -7,7 +7,7 @@ alwaysApply: true
 
 This is a monorepo with the following structure:
 - `/frontend` - Astro + React + TypeScript application
-- `/backend` - Kotlin + Spring Boot application (currently empty)
+- `/backend` - Kotlin + Spring Boot application
 - `/contracts` - OpenAPI specifications (single source of truth for API)
 
 ## Frontend Rules
