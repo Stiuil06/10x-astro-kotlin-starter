@@ -6,7 +6,7 @@ alwaysApply: true
 ## Project Structure
 
 This is a monorepo with the following structure:
-- `/frontend` - Astro + React + TypeScript application
+- `/frontend` - Astro + React + TypeScript + Tailwind CSS application
 - `/backend` - Kotlin + Spring Boot application
 - `/contracts` - OpenAPI specifications (single source of truth for API)
 
@@ -32,10 +32,21 @@ This is a monorepo with the following structure:
 
 ## Backend Rules
 
-### Keep `/backend` separate - don't touch for now
-- The `/backend` folder is currently empty
-- It will contain Kotlin + Spring Boot code in the future
-- Do not modify or create files in `/backend` unless explicitly requested
+### Backend is active and follows the documented modular Hexagonal architecture
+- The `/backend` folder contains a Kotlin 1.9.22 + Spring Boot 3.5.6 multi-module Gradle project under `backend/codebase/`
+- Treat `contracts/openapi.yaml` as the single source of truth for HTTP APIs; keep backend consistent with it
+- Follow the modular layout described in `backend/README.md`:
+  - apps (e.g., login, okrzei41b-backend with application/assembly/domain/infrastructure/openapi-specification)
+  - config, deployment, utilities
+- Domain must not depend on Spring or infrastructure; communicate via ports and DTOs
+- Prefer constructor-based DI, immutable data classes, Bean Validation, and centralized exception handling
+- Default commands (run from `backend/codebase`):
+  - Build: `./gradlew build`
+  - Test: `./gradlew test`
+  - Static analysis: `./gradlew detekt`
+  - Run app: `./gradlew :modules:deployment:bootRun`
+- Keep security via `apps/login`; protect endpoints by default and avoid logging secrets
+- Provide health/metrics via deployment module (e.g., `/actuator/health`)
 
 ## Contracts Rules
 
