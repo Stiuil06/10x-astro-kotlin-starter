@@ -54,15 +54,22 @@ All commands below are executed from `backend/codebase` (where the Gradle wrappe
 - Run the application locally (deployment module):
   ./gradlew :modules:deployment:bootRun
 
+- Run with specific profile:
+  ./gradlew :modules:deployment:bootRun --args='--spring.profiles.active=<profile>'
+
 - Packaging a bootable jar (from the deployment module):
   ./gradlew :modules:deployment:bootJar
 
 Configuration:
 - Default Spring profiles and config live under `modules/deployment/src/main/resources`.
-- An IntelliJ-friendly profile may be available: `application-intellij.yaml`.
+- Available profiles:
+  - `default` - standard configuration (application.yaml)
+  - `intellij` - IntelliJ-friendly profile with JWT secrets and CORS settings (application-intellij.yaml)
+  - `agent` - AI agent profile with extended CORS and AI-specific configurations (application-agent.yaml)
 
 Health and status:
 - The deployment module wires status/health endpoints. By default with Spring Boot you can rely on management endpoints (e.g., `/actuator/health`). Custom endpoints are configured in the deployment module (see `HealthHandler`, `MetricsRoutingConfig`).
+- Custom status endpoint: `http://localhost:8080/_status` - returns application status with commit information.
 
 
 ## Architecture and conventions

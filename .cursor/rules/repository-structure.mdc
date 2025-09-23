@@ -45,8 +45,10 @@ This is a monorepo with the following structure:
   - Test: `./gradlew test`
   - Static analysis: `./gradlew detekt`
   - Run app: `./gradlew :modules:deployment:bootRun`
+  - Run with profile: `./gradlew :modules:deployment:bootRun --args='--spring.profiles.active=<profile>'`
 - Keep security via `apps/login`; protect endpoints by default and avoid logging secrets
-- Provide health/metrics via deployment module (e.g., `/actuator/health`)
+- Provide status endpoint via deployment module (`/_status`)
+- Available profiles: `default`, `intellij`, `agent` (profile dedicated to use by AI agents)
 
 ## Contracts Rules
 

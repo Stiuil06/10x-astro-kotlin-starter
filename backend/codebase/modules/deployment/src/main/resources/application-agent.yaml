@@ -1,0 +1,33 @@
+application:
+  commit-number: agent
+  environment: agent
+
+jwt:
+  secret: "mySecretKey123456789012345678901234567890" # minimum 32 znaki
+  expiration: 86400000 # 24 godziny w milisekundach
+
+cors:
+  allowed-origins:
+    - "http://localhost:3000"
+    - "http://localhost:8080"
+    - "http://127.0.0.1:8080"
+    - "https://cursor.sh"
+    - "https://*.cursor.sh"
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+    - PATCH
+  allowed-headers:
+    - "*"
+  allow-credentials: true
+
+# AI Agent specific configurations
+ai:
+  agent:
+    enabled: true
+    timeout: 30000 # 30 seconds
+    max-retries: 3
+    debug-mode: true

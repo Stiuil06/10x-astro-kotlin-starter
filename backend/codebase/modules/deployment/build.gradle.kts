@@ -1,3 +1,7 @@
+plugins {
+    id("org.springframework.boot")
+}
+
 dependencies {
     implementation(project(":modules:config"))
     implementation(project(":modules:apps:login"))
