@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: 10x Project API
-  description: API specification for the 10x Project monorepo
+  description: API specification for the 10x Project monorepo with authentication and role-based access
   version: 1.0.0
   contact:
     name: 10x Project Team
@@ -11,41 +11,388 @@ servers:
   - url: https://todo
     description: Production server
 paths:
-  /api/hello:
+  /login:
+    post:
+      summary: User login
+      description: Authenticate user and receive JWT token
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized - invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /mieszkaniec:
     get:
-      summary: Hello endpoint
-      description: Returns a simple hello message
-      operationId: getHello
+      summary: Get mieszkaniec data
+      description: Returns data accessible to mieszkaniec role
+      operationId: getMieszkaniecData
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Hello from the backend!"
-                required:
-                  - message
-        '500':
-          description: Internal server error
+                type: string
+                example: "Data for mieszkaniec"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /zarzad:
+    get:
+      summary: Get zarzad data
+      description: Returns data accessible to zarzad role
+      operationId: getZarzadData
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Data for zarząd"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /administrator:
+    get:
+      summary: Get administrator data
+      description: Returns data accessible to administrator role
+      operationId: getAdministratorData
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Data for administrator"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /mieszkaniec/decision-log:
+    get:
+      summary: Get decision log
+      description: Returns paginated list of community decisions
+      operationId: getDecisionLog
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number (0-based)
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: sort
+          in: query
+          description: Sort field
+          required: false
+          schema:
+            type: string
+            enum: [date, category, status]
+            default: date
+        - name: category
+          in: query
+          description: Filter by category
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by status
+          required: false
+          schema:
+            type: string
+            enum: [active, completed, cancelled]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionLogResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /_status:
+    get:
+      summary: Health check
+      description: Returns application health status
+      operationId: getStatus
+      responses:
+        '200':
+          description: Application is healthy
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
+                  status:
                     type: string
-                    example: "Internal server error"
+                    example: "UP"
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
-    HelloResponse:
+    LoginRequest:
       type: object
       properties:
-        message:
+        username:
           type: string
-          description: The hello message
+          description: Username for authentication
+          example: "mieszkaniec"
+        password:
+          type: string
+          description: Password for authentication
+          example: "mieszkaniec123"
       required:
-        - message
+        - username
+        - password
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token for authentication
+          example: "eyJhbGciOiJIUzI1NiJ9..."
+        type:
+          type: string
+          description: Token type
+          example: "Bearer"
+      required:
+        - token
+        - type
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Access Denied"
+      required:
+        - error
+    Decision:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique decision identifier
+          example: "1"
+        title:
+          type: string
+          description: Decision title
+          example: "Remont klatki schodowej"
+        description:
+          type: string
+          description: Decision description
+          example: "Zatwierdzenie planu remontu klatki schodowej A"
+        date:
+          type: string
+          format: date
+          description: Decision creation date
+          example: "2024-01-15"
+        approvalDate:
+          type: string
+          format: date
+          description: Decision approval date
+          example: "2024-01-20"
+        category:
+          type: string
+          description: Decision category
+          example: "Remonty"
+        status:
+          type: string
+          enum: [active, completed, cancelled]
+          description: Decision status
+          example: "active"
+        votes:
+          $ref: '#/components/schemas/Votes'
+        documents:
+          type: array
+          items:
+            type: string
+          description: List of document filenames
+          example: ["Plan_remontu.pdf", "Kosztorys.pdf"]
+      required:
+        - id
+        - title
+        - description
+        - date
+        - category
+        - status
+        - votes
+    Votes:
+      type: object
+      properties:
+        votesFor:
+          type: integer
+          description: Number of votes for
+          example: 45
+        against:
+          type: integer
+          description: Number of votes against
+          example: 12
+        abstain:
+          type: integer
+          description: Number of abstain votes
+          example: 8
+      required:
+        - votesFor
+        - against
+        - abstain
+    DecisionLogResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Decision'
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+        totalElements:
+          type: integer
+          description: Total number of elements
+          example: 25
+        totalPages:
+          type: integer
+          description: Total number of pages
+          example: 3
+        size:
+          type: integer
+          description: Page size
+          example: 10
+        number:
+          type: integer
+          description: Current page number
+          example: 0
+        first:
+          type: boolean
+          description: Is first page
+          example: true
+        last:
+          type: boolean
+          description: Is last page
+          example: false
+        numberOfElements:
+          type: integer
+          description: Number of elements in current page
+          example: 10
+      required:
+        - content
+        - totalElements
+        - totalPages
+        - size
+        - number
+        - first
+        - last
+        - numberOfElements
+    Pageable:
+      type: object
+      properties:
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageNumber:
+          type: integer
+          description: Page number
+          example: 0
+        pageSize:
+          type: integer
+          description: Page size
+          example: 10
+        offset:
+          type: integer
+          description: Offset
+          example: 0
+        paged:
+          type: boolean
+          description: Is paged
+          example: true
+        unpaged:
+          type: boolean
+          description: Is unpaged
+          example: false
+    Sort:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+          description: Is sorted
+          example: true
+        unsorted:
+          type: boolean
+          description: Is unsorted
+          example: false
+        empty:
+          type: boolean
+          description: Is empty
+          example: false
