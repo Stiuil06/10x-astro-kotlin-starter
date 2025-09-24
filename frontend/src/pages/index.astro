@@ -1,18 +1,80 @@
 ---
-import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
-import UserList from "../components/UserList.tsx";
-import HelloApi from "../components/HelloApi.tsx";
 ---
 
-<Layout>
-  <Welcome />
-  
-  <div class="mt-8">
-    <UserList client:load />
-  </div>
-  
-  <div class="mt-8">
-    <HelloApi client:load />
-  </div>
+<Layout title="Wspólnota Mieszkaniowa Okrzei 41B">
+  <main class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <!-- Hero Section -->
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center">
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+            WSPÓLNOTA MIESZKANIOWA
+          </h1>
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-blue-600 mb-8">
+            OKRZEI 41B
+          </h2>
+          <div class="max-w-3xl mx-auto">
+            <p class="text-lg text-gray-600 mb-4">
+              ul. Stefana Okrzei 41B lok. 65, 25-526 Kielce, Poland
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4 text-sm text-gray-500">
+              <span>REGON: 389051065</span>
+              <span>NIP: 9592043082</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">
+          Szybkie akcje
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-blue-50 rounded-xl p-8 text-center hover:shadow-lg transition-shadow">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Zgłoś problem</h3>
+            <p class="text-gray-600 mb-4">Zgłoś awarię, uszkodzenie lub potrzebę naprawy</p>
+            <a href="/report-issue" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              Zgłoś teraz
+            </a>
+          </div>
+
+          <div class="bg-green-50 rounded-xl p-8 text-center hover:shadow-lg transition-shadow">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Log decyzji</h3>
+            <p class="text-gray-600 mb-4">Przeglądaj ważne decyzje zarządu wspólnoty</p>
+            <a href="/decisions" class="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+              Zobacz decyzje
+            </a>
+          </div>
+
+          <div class="bg-purple-50 rounded-xl p-8 text-center hover:shadow-lg transition-shadow">
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Kontakt</h3>
+            <p class="text-gray-600 mb-4">Skontaktuj się z zarządem wspólnoty</p>
+            <a href="/contact" class="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+              Napisz do nas
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
 </Layout>

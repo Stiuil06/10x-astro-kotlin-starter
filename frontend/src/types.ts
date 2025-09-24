@@ -35,3 +35,12 @@ export interface ApiError {
 
 // Add more shared types as needed for your specific backend
 
+// Role types
+export enum Role {
+  MIESZKANIEC = 'MIESZKANIEC',
+  ZARZAD = 'ZARZAD',
+  ADMINISTRATOR = 'ADMINISTRATOR'
+}
+
+export type UserRole = Role;
+

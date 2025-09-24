@@ -1,0 +1,15 @@
+---
+import Layout from "../layouts/Layout.astro";
+import DecisionsLogWrapper from "../components/DecisionsLogWrapper.tsx";
+---
+
+<Layout title="Log decyzji - Wspólnota Okrzei 41B">
+  <main class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <!-- Page Content -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-6xl mx-auto">
+        <DecisionsLogWrapper client:load />
+      </div>
+    </section>
+  </main>
+</Layout>

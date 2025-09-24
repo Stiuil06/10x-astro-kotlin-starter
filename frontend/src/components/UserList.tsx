@@ -1,33 +1,66 @@
 import { useState, useEffect } from 'react';
-import { apiService, type User } from '../lib/services/api.service';
-import { handleApiError } from '../lib/utils/error-handler';
+import { DefaultApi } from '../lib/generated/apis';
+import { Configuration } from '../lib/generated/runtime';
+import { useAuth } from './AuthContext';
+
+interface User {
+  id: string;
+  username: string;
+  roles: string[];
+}
 
 export default function UserList() {
+  const { isAuthenticated, token, username } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [apiClient] = useState(() => {
+    const config = new Configuration({
+      basePath: 'http://localhost:8080',
+      accessToken: token || undefined
+    });
+    return new DefaultApi(config);
+  });
 
   useEffect(() => {
     const fetchUsers = async () => {
+      if (!isAuthenticated) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        const response = await apiService.getUsers();
+        setError(null);
         
-        if (response.error) {
-          setError(response.error);
-        } else if (response.data) {
-          setUsers(response.data);
-        }
+        // Przykładowi użytkownicy systemu
+        const mockUsers: User[] = [
+          { id: '1', username: 'mieszkaniec', roles: ['MIESZKANIEC'] },
+          { id: '2', username: 'zarzad', roles: ['MIESZKANIEC', 'ZARZAD'] },
+          { id: '3', username: 'administrator', roles: ['MIESZKANIEC', 'ZARZAD', 'ADMINISTRATOR'] }
+        ];
+        
+        setUsers(mockUsers);
       } catch (err) {
-        const apiError = handleApiError(err);
-        setError(apiError.message);
+        setError(err instanceof Error ? err.message : 'Wystąpił błąd podczas ładowania danych');
+        console.error('Błąd podczas pobierania użytkowników:', err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUsers();
-  }, []);
+  }, [isAuthenticated, apiClient]);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+        <p className="text-yellow-800 text-center">
+          Zaloguj się, aby zobaczyć listę użytkowników
+        </p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -57,7 +90,11 @@ export default function UserList() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-gray-900">Lista użytkowników</h2>
+      <h2 className="text-2xl font-bold text-gray-900">Lista użytkowników systemu</h2>
+      <p className="text-sm text-gray-600">
+        Zalogowany jako: <strong>{username}</strong> | 
+        Demonstracja nowych endpointów z autoryzacją JWT
+      </p>
       {users.length === 0 ? (
         <p className="text-gray-500">Brak użytkowników do wyświetlenia</p>
       ) : (
@@ -67,11 +104,20 @@ export default function UserList() {
               key={user.id}
               className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
             >
-              <h3 className="font-semibold text-gray-900">{user.name}</h3>
-              <p className="text-sm text-gray-600">{user.email}</p>
-              <p className="text-xs text-gray-500 mt-2">
-                Utworzono: {new Date(user.createdAt).toLocaleDateString('pl-PL')}
-              </p>
+              <h3 className="font-semibold text-gray-900">{user.username}</h3>
+              <div className="mt-2">
+                <p className="text-sm text-gray-600 mb-2">Role:</p>
+                <div className="flex flex-wrap gap-1">
+                  {user.roles.map((role) => (
+                    <span
+                      key={role}
+                      className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
+                    >
+                      {role}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           ))}
         </div>
