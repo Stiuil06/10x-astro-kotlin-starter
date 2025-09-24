@@ -86,6 +86,51 @@ API-first:
 - `/contracts/openapi.yaml` is the source of truth for HTTP APIs. Backend implementations and frontend clients should conform to this contract.
 - Keep `apps/okrzei41b-backend/openapi-specification` consistent with the top-level contract.
 
+## OpenAPI Code Generation
+
+The backend uses OpenAPI Generator to automatically create Kotlin classes from the API specification. This ensures type safety and consistency between the contract and implementation.
+
+### How it works
+
+1. **Source**: The OpenAPI specification is read from `/contracts/openapi.yaml`
+2. **Generator**: Uses `kotlin-spring` generator to create Spring Boot compatible classes
+3. **Output**: Generated classes are placed in `src/main/kotlin/pl/okrzei41b/model/` with "View" suffix
+4. **Configuration**: Managed in `modules/apps/okrzei41b-backend/openapi-specification/build.gradle.kts`
+
+### Generated Classes
+
+The generator creates:
+- **Only Model classes**: Data classes with Jackson annotations and Jakarta Validation
+The generator not creates (we need to implement it separately in infrastructure module adapters layer):
+- **API classes**: Spring Boot controllers and service interfaces (when enabled)
+- **Infrastructure**: Serialization, validation, and HTTP client utilities
+
+### Regenerating Classes
+
+To regenerate classes after updating the OpenAPI specification:
+
+```bash
+cd backend/codebase
+./gradlew :modules:apps:okrzei41b-backend:openapi-specification:openApiGenerate
+```
+
+### Configuration
+
+The generation is configured with:
+- **Generator**: `kotlin-spring` for Spring Boot compatibility
+- **Package**: `pl.okrzei41b.model` for generated models
+- **Suffix**: "View" added to all model class names
+- **Validation**: Jakarta Validation annotations included
+- **Serialization**: Jackson annotations for JSON handling
+
+### Workflow
+
+1. Update `/contracts/openapi.yaml` with new endpoints or schemas
+2. Run the generation command above
+3. Review generated classes in `src/main/kotlin/pl/okrzei41b/model/`
+4. Use generated classes in your application code
+5. Implement controllers and services using the generated models
+
 
 ## Security
 
