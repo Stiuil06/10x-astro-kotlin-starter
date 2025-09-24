@@ -40,6 +40,7 @@ include("modules:apps:okrzei41b-backend:application")
 include("modules:apps:okrzei41b-backend:assembly")
 include("modules:apps:okrzei41b-backend:domain")
 include("modules:apps:okrzei41b-backend:infrastructure")
+include("modules:apps:okrzei41b-backend:infrastructure:rest-adapter")
 include("modules:apps:okrzei41b-backend:openapi-specification")
 
 include("modules:apps:login")

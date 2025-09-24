@@ -18,6 +18,5 @@ fun main(args: Array<String>) {
         val deploymentConfig = context.getBean(DeploymentConfig::class.java)
         log.info { "okrzei41b-backend Starting" }
         log.info { "Commit: ${deploymentConfig.commitNumber}" }
-        log.info { context.beanDefinitionNames.sorted() }
     }
 }

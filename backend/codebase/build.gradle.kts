@@ -9,7 +9,7 @@ val springDependencyManagementVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.9.22" apply true
-    id("org.springframework.boot") version "3.2.3" apply true
+    id("org.springframework.boot") version "3.2.3" apply false
     id("io.spring.dependency-management") version "1.1.4" apply true
     id("org.jetbrains.kotlin.plugin.spring") version "1.9.22" apply true
     id("io.gitlab.arturbosch.detekt") version "1.23.5" apply true
