@@ -50,12 +50,17 @@ export function LoginForm({ onClose, isMobile = false }: LoginFormProps) {
   return (
     <div
       className={`w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 ${
-        isMobile ? "mx-auto max-w-sm max-h-[90vh] overflow-y-auto" : "absolute top-full right-0 mt-2 w-96 min-w-80"
+        isMobile ? "mx-auto max-w-sm max-h-[90vh] overflow-y-auto" : "absolute top-full right-0 mt-2 w-96 min-w-80 z-50"
       }`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="login-title"
     >
       <div className="p-4 sm:p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Zaloguj się</h3>
+          <h3 id="login-title" className="text-lg font-semibold text-gray-900 dark:text-white">
+            Zaloguj się
+          </h3>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"

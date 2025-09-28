@@ -18,14 +18,29 @@ export function Navigation({ title }: NavigationProps) {
   // Zamykanie formularza po kliknięciu poza nim
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (loginFormRef.current && !loginFormRef.current.contains(event.target as Node)) {
-        setShowLoginForm(false);
+      const target = event.target as Node;
+
+      // Sprawdź czy kliknięcie było poza formularzem logowania
+      if (showLoginForm && loginFormRef.current) {
+        const contains = loginFormRef.current.contains(target);
+
+        // Sprawdź czy kliknięcie było na przycisku "Zaloguj się"
+        const isLoginButton =
+          (target as Element).closest('button[aria-label*="Zaloguj"]') ||
+          (target as Element).closest('button:has-text("Zaloguj")');
+
+        if (!contains && !isLoginButton) {
+          setShowLoginForm(false);
+        }
       }
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+
+      // Sprawdź czy kliknięcie było poza menu mobilnym
+      if (showMobileMenu && mobileMenuRef.current && !mobileMenuRef.current.contains(target)) {
         setShowMobileMenu(false);
       }
     };
 
+    // Dodaj listener tylko gdy formularz lub menu są otwarte
     if (showLoginForm || showMobileMenu) {
       document.addEventListener("mousedown", handleClickOutside);
     }
@@ -98,7 +113,7 @@ export function Navigation({ title }: NavigationProps) {
                   </Button>
                 </div>
               ) : (
-                <div className="relative" ref={loginFormRef}>
+                <div className="relative">
                   <Button
                     variant="outline"
                     size="sm"
@@ -107,7 +122,11 @@ export function Navigation({ title }: NavigationProps) {
                   >
                     Zaloguj się
                   </Button>
-                  {showLoginForm && <LoginForm onClose={handleLoginSuccess} isMobile={false} />}
+                  {showLoginForm && (
+                    <div ref={loginFormRef}>
+                      <LoginForm onClose={handleLoginSuccess} isMobile={false} />
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -212,7 +231,7 @@ export function Navigation({ title }: NavigationProps) {
               tabIndex={0}
               aria-label="Zamknij formularz logowania"
             />
-            <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="flex items-center justify-center min-h-screen p-4" ref={loginFormRef}>
               <LoginForm onClose={handleLoginSuccess} isMobile={true} />
             </div>
           </div>
