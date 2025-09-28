@@ -4,7 +4,7 @@ import { createApiClient, type LoginRequest, type LoginResponse } from "./api-ty
 // Przykład logowania użytkownika
 export const loginUser = async (username: string, password: string): Promise<LoginResponse> => {
   const apiClient = createApiClient();
-  
+
   const loginRequest: LoginRequest = {
     username,
     password,
@@ -22,7 +22,7 @@ export const loginUser = async (username: string, password: string): Promise<Log
 // Przykład pobierania danych użytkownika z tokenem
 export const getUserData = async (token: string): Promise<string> => {
   const apiClient = createApiClient(token);
-  
+
   try {
     const response = await apiClient.getUserData();
     return response;
@@ -35,7 +35,7 @@ export const getUserData = async (token: string): Promise<string> => {
 // Przykład pobierania danych moderatora
 export const getModeratorData = async (token: string): Promise<string> => {
   const apiClient = createApiClient(token);
-  
+
   try {
     const response = await apiClient.getModeratorData();
     return response;
@@ -48,7 +48,7 @@ export const getModeratorData = async (token: string): Promise<string> => {
 // Przykład pobierania danych administratora
 export const getAdministratorData = async (token: string): Promise<string> => {
   const apiClient = createApiClient(token);
-  
+
   try {
     const response = await apiClient.getAdministratorData();
     return response;
@@ -61,7 +61,7 @@ export const getAdministratorData = async (token: string): Promise<string> => {
 // Przykład sprawdzania statusu aplikacji
 export const getStatus = async () => {
   const apiClient = createApiClient();
-  
+
   try {
     const response = await apiClient.getStatus();
     return response;

@@ -16,10 +16,6 @@ import Layout from "../layouts/Layout.astro";
   const container = document.getElementById("endpoints-checker");
   if (container) {
     const root = createRoot(container);
-    root.render(
-      React.createElement(AuthProvider, null,
-        React.createElement(EndpointsChecker)
-      )
-    );
+    root.render(React.createElement(AuthProvider, null, React.createElement(EndpointsChecker)));
   }
 </script>

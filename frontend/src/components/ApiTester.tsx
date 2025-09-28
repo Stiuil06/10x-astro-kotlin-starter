@@ -17,7 +17,7 @@ export function ApiTester() {
   const [isLoading, setIsLoading] = useState(false);
 
   const addResult = (result: ApiTestResult) => {
-    setResults(prev => [...prev, result]);
+    setResults((prev) => [...prev, result]);
   };
 
   const clearResults = () => {
@@ -89,21 +89,19 @@ export function ApiTester() {
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Tester API Endpointów
-          </h2>
-          
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Tester API Endpointów</h2>
+
           <div className="mb-6">
             <div className="flex items-center space-x-4 mb-4">
               <div className="flex items-center space-x-2">
-                <div className={`w-3 h-3 rounded-full ${isAuthenticated ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <div className={`w-3 h-3 rounded-full ${isAuthenticated ? "bg-green-500" : "bg-red-500"}`}></div>
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Status: {isAuthenticated ? 'Zalogowany' : 'Nie zalogowany'}
+                  Status: {isAuthenticated ? "Zalogowany" : "Nie zalogowany"}
                 </span>
               </div>
               {user && (
                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Użytkownik: {user.username} | Role: {user.roles.join(', ')}
+                  Użytkownik: {user.username} | Role: {user.roles.join(", ")}
                 </div>
               )}
             </div>
@@ -117,15 +115,11 @@ export function ApiTester() {
             >
               {isLoading ? "Testowanie..." : "Testuj wszystkie"}
             </Button>
-            
-            <Button
-              onClick={() => testSingleEndpoint("status")}
-              disabled={isLoading}
-              variant="outline"
-            >
+
+            <Button onClick={() => testSingleEndpoint("status")} disabled={isLoading} variant="outline">
               Test Status
             </Button>
-            
+
             <Button
               onClick={() => testSingleEndpoint("user")}
               disabled={isLoading || !isAuthenticated}
@@ -133,7 +127,7 @@ export function ApiTester() {
             >
               Test User
             </Button>
-            
+
             <Button
               onClick={() => testSingleEndpoint("moderator")}
               disabled={isLoading || !isAuthenticated}
@@ -141,7 +135,7 @@ export function ApiTester() {
             >
               Test Moderator
             </Button>
-            
+
             <Button
               onClick={() => testSingleEndpoint("administrator")}
               disabled={isLoading || !isAuthenticated}
@@ -152,15 +146,8 @@ export function ApiTester() {
           </div>
 
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Wyniki testów ({results.length})
-            </h3>
-            <Button
-              onClick={clearResults}
-              variant="outline"
-              size="sm"
-              disabled={results.length === 0}
-            >
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Wyniki testów ({results.length})</h3>
+            <Button onClick={clearResults} variant="outline" size="sm" disabled={results.length === 0}>
               Wyczyść wyniki
             </Button>
           </div>
@@ -176,26 +163,18 @@ export function ApiTester() {
                   key={index}
                   className={`p-4 rounded-lg border ${
                     result.success
-                      ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                      : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                      ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
+                      : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-gray-900 dark:text-white">
-                      {result.endpoint}
-                    </h4>
+                    <h4 className="font-medium text-gray-900 dark:text-white">{result.endpoint}</h4>
                     <div className="flex items-center space-x-2">
-                      <div
-                        className={`w-2 h-2 rounded-full ${
-                          result.success ? 'bg-green-500' : 'bg-red-500'
-                        }`}
-                      ></div>
-                      <span className="text-sm font-medium">
-                        {result.success ? 'Sukces' : 'Błąd'}
-                      </span>
+                      <div className={`w-2 h-2 rounded-full ${result.success ? "bg-green-500" : "bg-red-500"}`}></div>
+                      <span className="text-sm font-medium">{result.success ? "Sukces" : "Błąd"}</span>
                     </div>
                   </div>
-                  
+
                   {result.success ? (
                     <div className="text-sm text-gray-600 dark:text-gray-400">
                       <pre className="bg-gray-100 dark:bg-gray-800 p-2 rounded text-xs overflow-x-auto">
@@ -205,9 +184,7 @@ export function ApiTester() {
                   ) : (
                     <div className="text-sm text-red-600 dark:text-red-400">
                       <p className="font-medium">Błąd: {result.error}</p>
-                      {result.status && (
-                        <p className="text-xs">Status HTTP: {result.status}</p>
-                      )}
+                      {result.status && <p className="text-xs">Status HTTP: {result.status}</p>}
                     </div>
                   )}
                 </div>

@@ -1,7 +1,7 @@
 // Layout components
 export * from "./layout";
 
-// UI components  
+// UI components
 export * from "./ui";
 
 // Auth components

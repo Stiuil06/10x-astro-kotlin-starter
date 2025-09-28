@@ -96,13 +96,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setError(null);
       setIsLoading(true);
-      
+
       const response = await apiService.login({ username, password });
-      
+
       if (response.success && response.data.token) {
         const token = response.data.token;
         const decodedUser = decodeJWT(token);
-        
+
         if (decodedUser && isTokenValid(decodedUser)) {
           setUser(decodedUser);
           localStorage.setItem("authToken", token);

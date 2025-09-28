@@ -63,7 +63,7 @@ export function EndpointsChecker() {
 
     try {
       let data: any;
-      
+
       switch (checkId) {
         case "status":
           const statusResponse = await apiService.getStatus();
@@ -131,17 +131,17 @@ export function EndpointsChecker() {
             <p className="text-xl text-blue-100/90 drop-shadow-md">
               Sprawdź status aplikacji backendowej poprzez różne endpointy
             </p>
-            
+
             <div className="mt-6 flex items-center justify-center space-x-4">
               <div className="flex items-center space-x-2">
-                <div className={`w-3 h-3 rounded-full ${isAuthenticated ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <div className={`w-3 h-3 rounded-full ${isAuthenticated ? "bg-green-500" : "bg-red-500"}`}></div>
                 <span className="text-sm font-medium text-blue-100">
-                  Status: {isAuthenticated ? 'Zalogowany' : 'Nie zalogowany'}
+                  Status: {isAuthenticated ? "Zalogowany" : "Nie zalogowany"}
                 </span>
               </div>
               {user && (
                 <div className="text-sm text-blue-100/70">
-                  Użytkownik: {user.username} | Role: {user.roles.join(', ')}
+                  Użytkownik: {user.username} | Role: {user.roles.join(", ")}
                 </div>
               )}
             </div>
@@ -174,7 +174,7 @@ export function EndpointsChecker() {
                         `${check.method} ${check.endpoint.split("/").pop()}`
                       )}
                     </button>
-                    
+
                     <p className="text-xs text-blue-100/70 text-center">Endpoint: {check.endpoint}</p>
 
                     {/* Wynik */}

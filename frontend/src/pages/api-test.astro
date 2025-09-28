@@ -22,15 +22,12 @@
   import { ApiTester } from "../components/ApiTester";
   import { AuthProvider } from "../components/auth";
   import { createRoot } from "react-dom/client";
+  import React from "react";
 
   // Renderuj komponent API Tester
   const container = document.getElementById("api-tester");
   if (container) {
     const root = createRoot(container);
-    root.render(
-      <AuthProvider>
-        <ApiTester />
-      </AuthProvider>
-    );
+    root.render(React.createElement(AuthProvider, null, React.createElement(ApiTester, null)));
   }
 </script>
