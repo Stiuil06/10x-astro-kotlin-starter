@@ -39,6 +39,12 @@ export function Navigation({ title }: NavigationProps) {
   const handleMobileLinkClick = () => {
     setShowMobileMenu(false);
   };
+
+  // Zamykanie formularza logowania po udanym logowaniu
+  const handleLoginSuccess = () => {
+    setShowLoginForm(false);
+    setShowMobileMenu(false);
+  };
   return (
     <nav className="bg-gradient-to-r from-purple-800/90 to-indigo-800/90 backdrop-blur-sm shadow-lg border-b border-purple-700/50 relative z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -101,7 +107,7 @@ export function Navigation({ title }: NavigationProps) {
                   >
                     Zaloguj się
                   </Button>
-                  {showLoginForm && <LoginForm onClose={() => setShowLoginForm(false)} />}
+                  {showLoginForm && <LoginForm onClose={handleLoginSuccess} isMobile={false} />}
                 </div>
               )}
             </div>
@@ -180,7 +186,7 @@ export function Navigation({ title }: NavigationProps) {
                   </Button>
                 </div>
               ) : (
-                <div className="relative" ref={loginFormRef}>
+                <div className="relative w-full" ref={loginFormRef}>
                   <Button
                     variant="outline"
                     size="sm"
@@ -189,12 +195,28 @@ export function Navigation({ title }: NavigationProps) {
                   >
                     Zaloguj się
                   </Button>
-                  {showLoginForm && <LoginForm onClose={() => setShowLoginForm(false)} />}
                 </div>
               )}
             </div>
           </div>
         </div>
+
+        {/* Mobile Login Form - Poza menu mobilnym */}
+        {showLoginForm && (
+          <div className="fixed inset-0 z-[10000] md:hidden">
+            <div
+              className="absolute inset-0 bg-black/20"
+              onClick={() => setShowLoginForm(false)}
+              onKeyDown={(e) => e.key === "Escape" && setShowLoginForm(false)}
+              role="button"
+              tabIndex={0}
+              aria-label="Zamknij formularz logowania"
+            />
+            <div className="flex items-center justify-center min-h-screen p-4">
+              <LoginForm onClose={handleLoginSuccess} isMobile={true} />
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );

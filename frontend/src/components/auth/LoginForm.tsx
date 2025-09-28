@@ -5,9 +5,10 @@ import type { LoginRequest } from "../../lib/generated";
 
 interface LoginFormProps {
   onClose: () => void;
+  isMobile?: boolean;
 }
 
-export function LoginForm({ onClose }: LoginFormProps) {
+export function LoginForm({ onClose, isMobile = false }: LoginFormProps) {
   const { login } = useAuth();
   const [formData, setFormData] = useState<LoginRequest>({
     username: "",
@@ -38,8 +39,8 @@ export function LoginForm({ onClose }: LoginFormProps) {
       // Zamknij formularz
       onClose();
     } catch (err: unknown) {
-      console.error("Błąd logowania:", err);
-      const errorMessage = err instanceof Error ? err.message : "Wystąpił błąd podczas logowania. Sprawdź dane i spróbuj ponownie.";
+      const errorMessage =
+        err instanceof Error ? err.message : "Wystąpił błąd podczas logowania. Sprawdź dane i spróbuj ponownie.";
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -47,8 +48,12 @@ export function LoginForm({ onClose }: LoginFormProps) {
   };
 
   return (
-    <div className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-[9999]">
-      <div className="p-6">
+    <div
+      className={`w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 ${
+        isMobile ? "mx-auto max-w-sm max-h-[90vh] overflow-y-auto" : "absolute top-full right-0 mt-2 w-96 min-w-80"
+      }`}
+    >
+      <div className="p-4 sm:p-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Zaloguj się</h3>
           <button
@@ -116,20 +121,22 @@ export function LoginForm({ onClose }: LoginFormProps) {
         </form>
 
         {/* Informacje o kontach testowych */}
-        <div className="mt-6 p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-700 rounded-lg">
-          <h4 className="text-sm font-medium text-purple-800 dark:text-purple-200 mb-3">Konta testowe:</h4>
-          <div className="space-y-2 text-xs text-purple-700 dark:text-purple-300">
-            <div className="flex justify-between">
-              <span className="font-medium">user</span>
-              <span>user123</span>
+        <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-700 rounded-lg">
+          <h4 className="text-xs sm:text-sm font-medium text-purple-800 dark:text-purple-200 mb-2 sm:mb-3">
+            Konta testowe:
+          </h4>
+          <div className="space-y-1 sm:space-y-2 text-xs text-purple-700 dark:text-purple-300">
+            <div className="flex justify-between items-center">
+              <span className="font-medium flex-shrink-0">user</span>
+              <span className="text-right ml-2">user123</span>
             </div>
-            <div className="flex justify-between">
-              <span className="font-medium">moderator</span>
-              <span>moderator123</span>
+            <div className="flex justify-between items-center">
+              <span className="font-medium flex-shrink-0">moderator</span>
+              <span className="text-right ml-2">moderator123</span>
             </div>
-            <div className="flex justify-between">
-              <span className="font-medium">administrator</span>
-              <span>admin123</span>
+            <div className="flex justify-between items-center">
+              <span className="font-medium flex-shrink-0">administrator</span>
+              <span className="text-right ml-2">admin123</span>
             </div>
           </div>
         </div>
